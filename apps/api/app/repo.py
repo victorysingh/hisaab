@@ -210,3 +210,43 @@ def update_bill(client, business_id: str, bill_id: str, data: dict) -> dict | No
         .execute()
     )
     return response.data[0] if response.data else None
+
+
+def get_forecast_inputs(client, business_id: str) -> dict:
+    """Return the raw rows the forecast engine needs: business balances, customers, invoices and bills."""
+    business = (
+        client.table("businesses")
+        .select("opening_balance,safety_buffer")
+        .eq("id", business_id)
+        .limit(1)
+        .execute()
+        .data[0]
+    )
+    customers = (
+        client.table("customers")
+        .select("id,name,monthly_fee,due_day,status")
+        .eq("business_id", business_id)
+        .execute()
+        .data
+    )
+    invoices = (
+        client.table("invoices")
+        .select("id,customer_id,period,amount,due_date,status,paid_at")
+        .eq("business_id", business_id)
+        .execute()
+        .data
+    )
+    bills = (
+        client.table("bills")
+        .select("id,name,amount,due_day,recurrence,next_due_date")
+        .eq("business_id", business_id)
+        .execute()
+        .data
+    )
+    return {
+        "start_balance": business["opening_balance"],
+        "safety_buffer": business["safety_buffer"],
+        "customers": customers,
+        "invoices": invoices,
+        "bills": bills,
+    }

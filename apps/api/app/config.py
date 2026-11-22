@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     demo_mode: bool = False
     demo_owner_user_id: str = ""
+    demo_today: str = ""
     supabase_url: str = ""
     supabase_service_key: str = ""
     web_origin: str = ""
