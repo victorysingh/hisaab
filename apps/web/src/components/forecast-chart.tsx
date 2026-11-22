@@ -64,7 +64,14 @@ export function ForecastChart({ base, scenario }: { base: Forecast; scenario?: F
             interval={Math.max(0, Math.ceil(data.length / 6) - 1)}
             tickLine={false}
           />
-          <YAxis tickFormatter={rupeesShort} tick={{ fontSize: 11 }} width={52} tickLine={false} axisLine={false} />
+          <YAxis
+            tickFormatter={rupeesShort}
+            tick={{ fontSize: 11 }}
+            width={52}
+            tickLine={false}
+            axisLine={false}
+            domain={[(min: number) => Math.min(0, Math.floor((min * 1.25) / 5000) * 5000), "auto"]}
+          />
           <Tooltip content={<ChartTooltip />} />
           <Area
             type="stepAfter"

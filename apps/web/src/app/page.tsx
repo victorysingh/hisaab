@@ -137,6 +137,7 @@ export default function HomePage() {
                         student: r.customer_name,
                         amount: r.total_due,
                         since: r.oldest_due_date,
+                        daysLate: r.days_late,
                       }),
                     )}
                     target="_blank"

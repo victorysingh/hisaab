@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from routers import agent, bills, customers, dashboard, forecast, invoices, payments, sms
+from routers import agent, bills, customers, dashboard, forecast, invoices, payments, settings, sms
 
 app = FastAPI(title="Hisaab API")
 
-settings = get_settings()
-origins = ["http://localhost:3000"] + ([settings.web_origin] if settings.web_origin else [])
+config = get_settings()
+origins = ["http://localhost:3000"] + ([config.web_origin] if config.web_origin else [])
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"])
 
 app.include_router(customers.router, prefix="/api/v1")
@@ -18,6 +18,7 @@ app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(forecast.router, prefix="/api/v1")
 app.include_router(sms.router, prefix="/api/v1")
 app.include_router(agent.router, prefix="/api/v1")
+app.include_router(settings.router, prefix="/api/v1")
 
 
 @app.get("/health")

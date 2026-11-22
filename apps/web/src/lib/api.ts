@@ -124,11 +124,24 @@ export function whatsappUrl(phone: string | null | undefined, text: string): str
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
-export function reminderText(opts: { guardian?: string | null; student: string; amount: Money; since: string }): string {
+export function reminderText(opts: {
+  guardian?: string | null;
+  student: string;
+  amount: Money;
+  since: string;
+  daysLate?: number;
+}): string {
   const hello = opts.guardian ? `Namaste ${opts.guardian},` : "Namaste,";
-  return (
-    `${hello} a gentle reminder that ${opts.student}'s tuition fees of ${rupees(opts.amount)} ` +
-    `(pending since ${shortDate(opts.since)}) are due. Kindly pay at your earliest convenience. ` +
-    `Thank you - ${BUSINESS_NAME}`
-  );
+  const fee = `${opts.student}'s tuition fees of ${rupees(opts.amount)}`;
+  const since = shortDate(opts.since);
+  const d = opts.daysLate ?? 0;
+  const body =
+    d <= 5
+      ? `just a friendly reminder that ${fee} are due. Please ignore this if already paid.`
+      : d <= 15
+        ? `a gentle reminder that ${fee} (due since ${since}) are pending. Kindly pay at your earliest convenience.`
+        : d <= 30
+          ? `${fee} have been pending since ${since}. Could you please let me know by when you can pay?`
+          : `this is regarding ${fee}, outstanding since ${since}. Please clear the dues this week, or call me to discuss.`;
+  return `${hello} ${body} Thank you - ${BUSINESS_NAME}`;
 }
