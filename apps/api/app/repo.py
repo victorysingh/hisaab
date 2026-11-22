@@ -121,12 +121,15 @@ def list_unpaid_invoices(client, business_id: str) -> list[dict]:
 
 
 def list_payments_for_customer(client, business_id: str, customer_id: str) -> list[dict]:
-    """Return one customer's payments, most recently received first."""
+    """Return one customer's payments (linked through their invoices), most recently received first."""
+    invoice_ids = [row["id"] for row in list_invoices_for_customer(client, business_id, customer_id)]
+    if not invoice_ids:
+        return []
     return (
         client.table("payments")
         .select("*")
         .eq("business_id", business_id)
-        .eq("customer_id", customer_id)
+        .in_("invoice_id", invoice_ids)
         .order("received_at", desc=True)
         .execute()
         .data
@@ -134,8 +137,9 @@ def list_payments_for_customer(client, business_id: str, customer_id: str) -> li
 
 
 def insert_payment(client, row: dict) -> dict:
-    """Insert a payment row and return the inserted row."""
-    return client.table("payments").insert(row).execute().data[0]
+    """Insert a payment row (dropping customer_id, which the payments table does not have) and return it."""
+    clean = {key: value for key, value in row.items() if key != "customer_id"}
+    return client.table("payments").insert(clean).execute().data[0]
 
 
 def update_invoice(client, business_id: str, invoice_id: str, data: dict) -> dict | None:
