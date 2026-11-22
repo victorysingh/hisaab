@@ -201,7 +201,9 @@ export function MicBar() {
 
   // Prompt chips elsewhere on the page ask through this event.
   const sendRef = useRef(send);
-  sendRef.current = send;
+  useEffect(() => {
+    sendRef.current = send;
+  });
   useEffect(() => {
     const onAsk = (e: Event) => void sendRef.current((e as CustomEvent<{ text: string }>).detail.text);
     window.addEventListener('hisaab:ask', onAsk);

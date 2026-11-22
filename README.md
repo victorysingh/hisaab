@@ -73,7 +73,12 @@ The web app reads these names (`apps/web/.env.local`):
 
 These names are set in `apps/web/.env.local` but the web code does not read them yet: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_DEMO_MODE`.
 
-These names are in `.env.example` but are not read by the code yet: `SARVAM_API_KEY`, `OPENAI_API_KEY`, `LLM_API_KEY`, `TTS_API_KEY`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `API_BASE_URL`.
+Razorpay (test mode), read by `apps/api/adapters/payments.py`:
+
+- `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`: from Razorpay Test Mode, API Keys. Without them, reminders carry no payment link.
+- `RAZORPAY_WEBHOOK_SECRET`: must match the secret on the Razorpay webhook.
+
+These names are in `.env.example` but are not read by the code yet: `SARVAM_API_KEY`, `OPENAI_API_KEY`, `LLM_API_KEY`, `TTS_API_KEY`, `API_BASE_URL`.
 
 ## Run the tests
 
@@ -85,6 +90,8 @@ The web app has no test script. Check it with `npm run lint` in `apps/web`.
 ## Deploy the API
 
 `render.yaml` at the repo root defines the API as a Python web service on Render, with `rootDir` set to `apps/api`. Set the environment variables in the Render dashboard; they are marked `sync: false` in the file, so their values are not stored in the repo.
+
+Step-by-step deploy (Render, Vercel, Razorpay webhook): `docs/DEPLOY.md`.
 
 ## Data
 

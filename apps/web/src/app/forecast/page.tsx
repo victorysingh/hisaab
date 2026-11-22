@@ -59,8 +59,8 @@ function Headline({ f, label }: { f: Forecast; label?: string }) {
 
 export default function ForecastPage() {
   const [days, setDays] = useState<(typeof HORIZONS)[number]>(60);
-  const [base, setBase] = useState<Forecast | null>(null);
-  const [scenario, setScenario] = useState<Forecast | null>(null);
+  const [loaded, setLoaded] = useState<{ key: string; f: Forecast } | null>(null);
+  const [scenarioResult, setScenarioResult] = useState<Forecast | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [changes, setChanges] = useState<WhatIfChange[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +84,8 @@ export default function ForecastPage() {
     try {
       const pending = sessionStorage.getItem(WHAT_IF_STORAGE_KEY);
       if (pending) {
+        // sessionStorage only exists in the browser, so it is read after hydration.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setChanges(JSON.parse(pending) as WhatIfChange[]);
         sessionStorage.removeItem(WHAT_IF_STORAGE_KEY);
       }
@@ -101,27 +103,26 @@ export default function ForecastPage() {
   }, []);
 
   // Baseline forecast whenever the horizon changes.
+  const baseKey = `${days}:${refreshKey}`;
+  const base = loaded?.key === baseKey ? loaded.f : null;
   useEffect(() => {
-    setBase(null);
     api<Forecast>(`/forecast?days=${days}`)
       .then((f) => {
-        setBase(f);
+        setLoaded({ key: `${days}:${refreshKey}`, f });
         setError(null);
       })
       .catch((e: Error) => setError(e.message));
   }, [days, refreshKey]);
 
-  // What-if scenario, debounced.
+  // What-if scenario, debounced. No changes means no scenario.
+  const scenario = changes.length > 0 ? scenarioResult : null;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
-    if (changes.length === 0) {
-      setScenario(null);
-      return;
-    }
+    if (changes.length === 0) return;
     timer.current = setTimeout(() => {
       api<Forecast>("/forecast/what-if", { method: "POST", body: JSON.stringify({ days, changes }) })
-        .then(setScenario)
+        .then(setScenarioResult)
         .catch((e: Error) => setError(e.message));
     }, 300);
   }, [changes, days]);
