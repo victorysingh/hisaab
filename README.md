@@ -2,6 +2,8 @@
 
 Other apps make you type the past. Hisaab you just talk to, and it tells you the future.
 
+Live: https://hisaab-peach-phi.vercel.app (API: https://hisaab-api-q5n9.onrender.com)
+
 Hisaab is a voice-first fee and cash-flow app for Indian home tutors. It tells you whether you will have enough cash next month before the money runs out.
 
 ## The problem (PS1: small business cash flow)
