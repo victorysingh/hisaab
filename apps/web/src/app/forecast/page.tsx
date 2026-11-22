@@ -62,6 +62,7 @@ export default function ForecastPage() {
   const [changes, setChanges] = useState<WhatIfChange[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showAssumptions, setShowAssumptions] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // what-if form state
   const [delayCustomer, setDelayCustomer] = useState("");
@@ -87,8 +88,13 @@ export default function ForecastPage() {
       // storage unavailable
     }
     const onEvent = (e: Event) => setChanges((e as CustomEvent<{ changes: WhatIfChange[] }>).detail.changes);
+    const onData = () => setRefreshKey((k) => k + 1);
     window.addEventListener(WHAT_IF_EVENT, onEvent);
-    return () => window.removeEventListener(WHAT_IF_EVENT, onEvent);
+    window.addEventListener("hisaab:data-changed", onData);
+    return () => {
+      window.removeEventListener(WHAT_IF_EVENT, onEvent);
+      window.removeEventListener("hisaab:data-changed", onData);
+    };
   }, []);
 
   // Baseline forecast whenever the horizon changes.
@@ -100,7 +106,7 @@ export default function ForecastPage() {
         setError(null);
       })
       .catch((e: Error) => setError(e.message));
-  }, [days]);
+  }, [days, refreshKey]);
 
   // What-if scenario, debounced.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

@@ -1,8 +1,8 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from routers import customers, invoices, payments, bills, dashboard, forecast, sms
+from routers import agent, bills, customers, dashboard, forecast, invoices, payments, sms
 
 app = FastAPI(title="Hisaab API")
 
@@ -17,6 +17,7 @@ app.include_router(bills.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(forecast.router, prefix="/api/v1")
 app.include_router(sms.router, prefix="/api/v1")
+app.include_router(agent.router, prefix="/api/v1")
 
 
 @app.get("/health")

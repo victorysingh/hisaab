@@ -91,6 +91,10 @@ export default function DuesPage() {
   }, []);
 
   useEffect(load, [load]);
+  useEffect(() => {
+    window.addEventListener("hisaab:data-changed", load);
+    return () => window.removeEventListener("hisaab:data-changed", load);
+  }, [load]);
 
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
