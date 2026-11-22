@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     demo_owner_user_id: str = ""
     supabase_url: str = ""
     supabase_service_key: str = ""
+    web_origin: str = ""
 
 
 @lru_cache(maxsize=1)

@@ -22,13 +22,14 @@ class FakeStore:
         self.payments = []
 
     # seeding helpers
-    def add_bill(self, name="Rent", amount="1800", due_day=5):
+    def add_bill(self, name="Rent", amount="1800", due_day=5, recurrence="monthly"):
         row = {
             "id": str(uuid4()),
             "business_id": "biz-1",
             "name": name,
             "amount": amount,
             "due_day": due_day,
+            "recurrence": recurrence,
             "next_due_date": "2025-06-05",
         }
         self.bills[row["id"]] = row
@@ -221,12 +222,14 @@ def test_dashboard_dues_totals_sum_unpaid_invoices(client, fake):
     assert "rows" in body
     assert "totals" in body
     assert Decimal(str(body["totals"]["total_outstanding"])) == Decimal("2500")
-    assert any(row["name"] == "Aisha Khan" for row in body["rows"])
+    assert any(row["customer_name"] == "Aisha Khan" for row in body["rows"])
 
 
 def test_app_mounts_routes_under_api_v1_and_health_at_root():
     from app.main import app as main_app
 
-    paths = [r.path for r in main_app.routes]
-    assert "/api/v1/customers" in paths
-    assert "/health" in paths
+    client = TestClient(main_app)
+    response = client.get("/health")
+    assert response.status_code == 200
+    schema_paths = main_app.openapi()["paths"]
+    assert "/api/v1/dashboard/dues" in schema_paths
