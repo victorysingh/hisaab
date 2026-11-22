@@ -44,7 +44,7 @@ def update_bill(
     client=Depends(get_supabase_client),
 ) -> BillOut:
     """Apply only the fields the client sent to one bill; recomputes next_due_date when due_day changes."""
-    data = payload.model_dump(mode="json", exclude_unset=True)
+    data = payload.model_dump(mode="json", exclude_unset=True, exclude_none=True)
     if not data:
         raise HTTPException(422, "No fields to update")
     if "amount" in data:

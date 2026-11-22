@@ -66,7 +66,7 @@ def update_customer(
     client=Depends(get_supabase_client),
 ) -> CustomerOut:
     """Apply only the fields the client sent to one customer."""
-    data = payload.model_dump(mode="json", exclude_unset=True)
+    data = payload.model_dump(mode="json", exclude_unset=True, exclude_none=True)
     if not data:
         raise HTTPException(422, "No fields to update")
     row = repo.update_customer(client, business_id, customer_id, data)
