@@ -16,21 +16,23 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur">
-      <ul className="mx-auto flex h-16 max-w-md items-stretch justify-around">
+    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 border-t-2 border-[var(--ink)] bg-white md:border-x-2">
+      <ul className="flex h-16 items-center justify-around px-1">
         {items.map(({ href, label, icon: Icon }) => {
           const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
           return (
-            <li key={href} className="flex flex-1">
+            <li key={href} className="flex flex-1 justify-center">
               <Link
                 href={href}
                 aria-current={active ? 'page' : undefined}
                 className={
-                  'flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] ' +
-                  (active ? 'font-semibold text-primary' : 'text-muted-foreground hover:text-foreground')
+                  'flex flex-col items-center gap-0.5 rounded-xl px-2.5 py-1 text-[11px] font-semibold transition-all ' +
+                  (active
+                    ? 'border-2 border-[var(--ink)] bg-[var(--lime)] text-[var(--ink)] shadow-[2px_2px_0_var(--ink)]'
+                    : 'border-2 border-transparent text-black/55 hover:text-[var(--ink)]')
                 }
               >
-                <Icon className={'h-5 w-5 ' + (active ? 'stroke-[2.5]' : '')} />
+                <Icon className="h-5 w-5" />
                 {label}
               </Link>
             </li>

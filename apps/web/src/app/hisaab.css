@@ -1,0 +1,150 @@
+/* Hisaab look: bold & playful. Cream paper, ink outlines, hard shadows, saffron + lime accents. */
+
+:root {
+  --ink: #141414;
+  --paper: #fff6e5;
+  --hero: #0b6e5b;
+  --saffron: #ffc53d;
+  --lime: #d4f65a;
+  --coral: #ff6b4a;
+  --background: #fff6e5;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Cards and buttons with black outline + hard offset shadow */
+.brut-card {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.brut-card.lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.brut-card.lift:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.brut-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 2px solid var(--ink) !important;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.brut-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.brut-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.chip {
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Highlighter behind key numbers */
+.hl {
+  background: var(--saffron);
+  color: var(--ink);
+  padding: 0 0.18em;
+  border-radius: 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Slanted scrolling ticker */
+.ticker {
+  overflow: hidden;
+  background: var(--lime);
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: rotate(-2deg);
+  margin-left: -12px;
+  margin-right: -12px;
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+.ticker-item {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  color: var(--ink);
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Entrance + ambient motion */
+.rise {
+  animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.pop {
+  animation: pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+.twinkle {
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(25deg); }
+}
+.float {
+  animation: float 5s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.mic-ring {
+  box-shadow: 0 0 0 0 rgba(212, 246, 90, 0.9);
+  animation: mic-ring 2.4s ease-out infinite;
+}
+@keyframes mic-ring {
+  0% { box-shadow: 0 0 0 0 rgba(212, 246, 90, 0.9); }
+  70% { box-shadow: 0 0 0 14px rgba(212, 246, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 246, 90, 0); }
+}
+
+/* Dotted backdrop around the app on wide screens */
+.dots {
+  background-color: #f3ead6;
+  background-image: radial-gradient(rgba(20, 20, 20, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track, .rise, .pop, .twinkle, .float, .mic-ring { animation: none !important; }
+}

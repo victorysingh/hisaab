@@ -53,11 +53,24 @@ export function ForecastChart({ base, scenario }: { base: Forecast; scenario?: F
   const shortfallPoint = shortfall ? data.find((p) => p.label === shortDate(shortfall.date)) : undefined;
   const buffer = num(base.safety_buffer);
 
+  // Axis: ticks at round steps from 0 up to the top, and just enough room below 0 to show any dip.
+  const lows = data.map((p) => Math.min(p.band[0], p.likely, p.scenario ?? Infinity));
+  const highs = data.map((p) => Math.max(p.band[1], p.likely, p.scenario ?? -Infinity));
+  const lo = Math.min(...lows, buffer);
+  const hi = Math.max(...highs, buffer, 1);
+  const mag = 10 ** Math.floor(Math.log10(hi / 5));
+  const step = [1, 2, 5, 10].map((m) => m * mag).find((x) => x >= hi / 5) ?? mag * 10;
+  const top = Math.ceil(hi / step) * step;
+  const bottom = lo < 0 ? Math.floor((lo - (top - lo) * 0.06) / 1000) * 1000 : 0;
+  const ticks: number[] = [];
+  for (let t = 0; t <= top; t += step) ticks.push(t);
+
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+          {bottom < 0 && <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1} />}
           <XAxis
             dataKey="label"
             tick={{ fontSize: 11 }}
@@ -70,7 +83,9 @@ export function ForecastChart({ base, scenario }: { base: Forecast; scenario?: F
             width={52}
             tickLine={false}
             axisLine={false}
-            domain={[(min: number) => Math.min(0, Math.floor((min * 1.25) / 5000) * 5000), "auto"]}
+            domain={[bottom, top]}
+            ticks={ticks}
+            allowDataOverflow
           />
           <Tooltip content={<ChartTooltip />} />
           <Area

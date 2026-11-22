@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { api, rupees, type Customer } from "@/lib/api";
+import { Avatar } from "@/components/avatar";
+import { api, ordinal, rupees, type Customer } from "@/lib/api";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[] | null>(null);
@@ -33,7 +34,7 @@ export default function CustomersPage() {
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
       <header>
-        <h1 className="text-2xl font-semibold">Students</h1>
+        <h1 className="font-display text-3xl font-extrabold">Students</h1>
         {customers && (
           <p className="text-sm text-muted-foreground">
             {active} active · {customers.length - active} left or paused
@@ -51,17 +52,18 @@ export default function CustomersPage() {
       {!customers && !error && <div className="h-64 animate-pulse rounded-xl bg-muted" />}
 
       {groups.map(([batch, list]) => (
-        <section key={batch} className="rounded-xl border">
-          <h2 className="border-b px-4 py-2 text-sm font-semibold">
+        <section key={batch} className="brut-card overflow-hidden">
+          <h2 className="border-b-2 border-[var(--ink)] bg-[var(--paper)] px-4 py-2 text-sm font-bold">
             {batch} <span className="font-normal text-muted-foreground">({list.length})</span>
           </h2>
-          <ul className="divide-y">
+          <ul className="divide-y-2 divide-black/10">
             {list.map((c) => (
               <li key={c.id} className="flex items-center gap-3 px-4 py-3">
+                <Avatar name={c.name} className={c.status !== "active" ? "opacity-50" : ""} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{c.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {c.guardian_name || "Parent"} · due on the {c.due_day}
+                    {c.guardian_name || "Parent"} · due on the {ordinal(c.due_day)}
                   </p>
                 </div>
                 {c.status !== "active" && (

@@ -100,7 +100,7 @@ export default function SmsSimulatorPage() {
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
       <header>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+        <h1 className="flex items-center gap-2 font-display text-3xl font-extrabold">
           <MessageSquare className="h-6 w-6" /> SMS simulator
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -119,7 +119,7 @@ export default function SmsSimulatorPage() {
               setText(t);
               void send(t);
             }}
-            className="w-full rounded-lg border px-3 py-2 text-left text-sm hover:bg-muted disabled:opacity-50"
+            className="brut-card lift w-full px-3 py-2.5 text-left text-sm font-semibold disabled:opacity-50"
           >
             {p.label}
           </button>
@@ -132,7 +132,7 @@ export default function SmsSimulatorPage() {
           onChange={(e) => setText(e.target.value)}
           rows={4}
           placeholder="Or paste any bank SMS here"
-          className="w-full rounded-lg border bg-background p-3 text-sm"
+          className="w-full rounded-2xl border-2 border-[var(--ink)] bg-white p-3 text-sm"
         />
         <Button type="button" className="w-full" disabled={busy || !text.trim()} onClick={() => send(text)}>
           {busy ? "Reading…" : "Send SMS"}
@@ -142,7 +142,7 @@ export default function SmsSimulatorPage() {
       {error && <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
 
       {result && (
-        <section className={"space-y-3 rounded-xl border p-4 " + STATUS_STYLE[result.status]}>
+        <section className={"pop space-y-3 brut-card p-4 " + STATUS_STYLE[result.status]}>
           <p className="font-semibold">
             {result.status === "matched" && `✓ ${rupees(result.parsed?.amount)} from ${result.customer_name} - marked paid`}
             {result.status === "needs_review" && `${rupees(result.parsed?.amount)} came in from ${result.parsed?.payer_text ?? "someone"}. Whose fee is it?`}

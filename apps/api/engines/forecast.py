@@ -320,6 +320,8 @@ def _causes(shortfall: dict | None, invoices: list[dict], expected_likely: dict[
         return []
     sdate = to_date(shortfall["date"])
     causes = []
+    # Overdue fees not expected before the shortfall, grouped per student so one person = one line.
+    owed: dict[str, dict] = {}
     for inv in invoices:
         if is_paid(inv):
             continue
@@ -328,13 +330,16 @@ def _causes(shortfall: dict | None, invoices: list[dict], expected_likely: dict[
             continue  # only invoices already overdue
         exp = expected_likely.get(inv["id"], "missing")
         if exp is None or (isinstance(exp, date) and exp > sdate):
-            causes.append({
-                "type": "overdue_invoice",
-                "label": f"{names.get(inv['customer_id'], 'Student')} - {month_label(inv['period'])} fees"
-                if inv.get("period") else names.get(inv["customer_id"], "Student"),
-                "amount": to_money(inv.get("amount")),
-                "date": due.isoformat(),
-            })
+            g = owed.setdefault(inv["customer_id"], {"amount": Decimal("0"), "months": [], "oldest": due})
+            g["amount"] += to_money(inv.get("amount"))
+            g["months"].append(inv.get("period") or "")
+            g["oldest"] = min(g["oldest"], due)
+    for cid, g in owed.items():
+        name = names.get(cid, "Student")
+        n = len(g["months"])
+        label = f"{name} - {n} months unpaid" if n > 1 else (
+            f"{name} - {month_label(g['months'][0])} fees" if g["months"][0] else name)
+        causes.append({"type": "overdue_invoice", "label": label, "amount": g["amount"], "date": g["oldest"].isoformat()})
     for ev in events:
         if ev["date"] <= sdate:
             causes.append({"type": "bill", "label": ev["name"], "amount": ev["amount"], "date": ev["date"].isoformat()})

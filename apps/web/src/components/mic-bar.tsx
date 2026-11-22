@@ -199,11 +199,20 @@ export function MicBar() {
 
   useEffect(() => () => recRef.current?.stop(), []);
 
+  // Prompt chips elsewhere on the page ask through this event.
+  const sendRef = useRef(send);
+  sendRef.current = send;
+  useEffect(() => {
+    const onAsk = (e: Event) => void sendRef.current((e as CustomEvent<{ text: string }>).detail.text);
+    window.addEventListener('hisaab:ask', onAsk);
+    return () => window.removeEventListener('hisaab:ask', onAsk);
+  }, []);
+
   return (
     <>
       {open && (
-        <div className="fixed inset-x-0 bottom-36 z-30 px-2">
-          <div className="mx-auto max-w-md rounded-xl border bg-background p-3 shadow-lg">
+        <div className="fixed bottom-36 left-1/2 z-30 w-full max-w-md -translate-x-1/2 px-2">
+          <div className="brut-card pop p-3">
             <div className="flex items-start gap-2">
               <div className="min-w-0 flex-1 space-y-2 text-sm">
                 {listening && <p className="font-medium text-red-600">Listening… speak now</p>}
@@ -223,7 +232,7 @@ export function MicBar() {
                           key={s}
                           type="button"
                           onClick={() => void send(s)}
-                          className="rounded-full border px-2.5 py-1 text-xs hover:bg-muted"
+                          className="rounded-full border-2 border-[var(--ink)] bg-white px-2.5 py-1 text-xs font-semibold hover:bg-[var(--lime)]"
                         >
                           {s}
                         </button>
@@ -281,9 +290,9 @@ export function MicBar() {
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-16 z-30 border-t bg-background p-2">
+      <div className="fixed bottom-16 left-1/2 z-30 w-full max-w-md -translate-x-1/2 border-t-2 border-[var(--ink)] bg-[var(--paper)] p-2 md:border-x-2">
         <form
-          className="mx-auto flex max-w-md items-center gap-2"
+          className="flex items-center gap-2"
           onSubmit={(e) => {
             e.preventDefault();
             void send(text);
@@ -294,7 +303,10 @@ export function MicBar() {
             size="icon"
             onClick={toggleMic}
             className={
-              'h-12 w-12 shrink-0 rounded-full ' + (listening ? 'animate-pulse bg-red-600 hover:bg-red-600' : '')
+              'h-12 w-12 shrink-0 rounded-full border-2 border-[var(--ink)] shadow-[3px_3px_0_var(--ink)] ' +
+              (listening
+                ? 'animate-pulse bg-[var(--coral)] text-white hover:bg-[var(--coral)]'
+                : 'mic-ring bg-[var(--ink)] text-[var(--lime)] hover:bg-[var(--ink)]')
             }
             aria-label={listening ? 'Stop listening' : 'Speak'}
           >
@@ -304,10 +316,17 @@ export function MicBar() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onFocus={() => setOpen(true)}
-            placeholder={pending ? 'Say "yes" to confirm' : 'Type or speak a command'}
-            className="flex-1"
+            placeholder={pending ? 'Say "yes" to confirm' : 'Ask anything… "will I make rent?"'}
+            className="h-11 flex-1 rounded-full border-2 border-[var(--ink)] bg-white px-4"
           />
-          <Button type="submit" size="icon" variant="outline" aria-label="Send" disabled={busy || !text.trim()}>
+          <Button
+            type="submit"
+            size="icon"
+            variant="outline"
+            aria-label="Send"
+            disabled={busy || !text.trim()}
+            className="h-11 w-11 rounded-full border-2 border-[var(--ink)] bg-[var(--saffron)] hover:bg-[var(--saffron)]"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </form>

@@ -71,7 +71,7 @@ export default function SettingsPage() {
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
       <header>
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="font-display text-3xl font-extrabold">Settings</h1>
         <p className="text-sm text-muted-foreground">{view?.business.name ?? "Your business"}</p>
       </header>
 
@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
       {view && (
         <>
-          <section className="space-y-3 rounded-xl border p-4">
+          <section className="space-y-3 brut-card p-4">
             <h2 className="font-semibold">Cash</h2>
             <label className="block space-y-1 text-sm">
               <span className="text-muted-foreground">Cash in hand today (₹)</span>
@@ -95,7 +95,7 @@ export default function SettingsPage() {
             </label>
             <Button
               type="button"
-              className="w-full"
+              className="w-full rounded-full border-2 border-[var(--ink)] font-bold shadow-[3px_3px_0_var(--ink)]"
               disabled={busy}
               onClick={() =>
                 run(
@@ -112,15 +112,15 @@ export default function SettingsPage() {
             </Button>
           </section>
 
-          <section className="rounded-xl border">
-            <div className="flex items-center justify-between border-b px-4 py-3">
+          <section className="brut-card overflow-hidden">
+            <div className="flex items-center justify-between border-b-2 border-[var(--ink)] bg-[var(--paper)] px-4 py-3">
               <h2 className="font-semibold">Bills</h2>
               <span className="text-sm text-muted-foreground">{rupees(monthlyTotal)}/month</span>
             </div>
             {view.bills.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground">No bills yet. Add rent, salary and utilities below.</p>
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y-2 divide-black/10">
                 {view.bills.map((b) => (
                   <li key={b.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
@@ -147,7 +147,7 @@ export default function SettingsPage() {
             )}
           </section>
 
-          <section className="space-y-3 rounded-xl border p-4">
+          <section className="space-y-3 brut-card p-4">
             <h2 className="font-semibold">Add a bill</h2>
             <Input placeholder="e.g. Rent, Assistant salary" value={billName} onChange={(e) => setBillName(e.target.value)} />
             <Input
@@ -217,7 +217,7 @@ export default function SettingsPage() {
             </Button>
           </section>
 
-          <section className="rounded-xl border p-4 text-sm text-muted-foreground">
+          <section className="brut-card p-4 text-sm text-muted-foreground">
             <p className="font-medium text-foreground">Demo tools</p>
             <p className="mt-1">
               Open the <a className="underline" href="/sms-simulator">SMS simulator</a> to send a test bank message.

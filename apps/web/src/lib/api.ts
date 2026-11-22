@@ -111,6 +111,11 @@ export function shortDate(iso: string): string {
   return `${d} ${MONTHS[m - 1]}`;
 }
 
+export function ordinal(n: number): string {
+  const s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
+  return `${n}${s}`;
+}
+
 /** "2026-12" -> next month string from an ISO date: "2026-11-22" -> "2026-12" */
 export function nextPeriod(iso: string): string {
   const [y, m] = iso.slice(0, 7).split("-").map(Number);

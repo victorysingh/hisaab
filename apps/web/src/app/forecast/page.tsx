@@ -39,13 +39,16 @@ function Headline({ f, label }: { f: Forecast; label?: string }) {
   const lowest = f.days.reduce((min, d) => (num(d.likely) < num(min.likely) ? d : min), f.days[0]);
   return (
     <div>
-      {label && <p className="text-xs font-medium uppercase tracking-wide text-amber-700">{label}</p>}
+      {label && <p className="chip mb-1 inline-block bg-[var(--saffron)]">{label}</p>}
       {f.shortfall ? (
-        <p className="text-lg font-semibold text-red-700">
-          You&apos;ll be {rupees(f.shortfall.amount)} short on {shortDate(f.shortfall.date)}
+        <p className="font-display text-2xl font-extrabold leading-tight">
+          You&apos;ll be <span className="hl">{rupees(f.shortfall.amount)}</span> short on{" "}
+          <span className="whitespace-nowrap">{shortDate(f.shortfall.date)}</span>
         </p>
       ) : (
-        <p className="text-lg font-semibold text-emerald-700">You&apos;re covered for the next {f.days_ahead} days</p>
+        <p className="font-display text-2xl font-extrabold leading-tight">
+          You&apos;re <span className="hl">covered</span> for the next {f.days_ahead} days
+        </p>
       )}
       <p className="text-sm text-muted-foreground">
         Lowest point: {rupees(lowest.likely)} on {shortDate(lowest.date)} · today {rupees(f.start_balance)}
@@ -157,17 +160,17 @@ export default function ForecastPage() {
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
       <header className="flex items-end justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-semibold">Forecast</h1>
+          <h1 className="font-display text-3xl font-extrabold">Forecast</h1>
           <p className="text-sm text-muted-foreground">Your cash over the next {days} days.</p>
         </div>
-        <div className="flex rounded-lg border p-0.5">
+        <div className="flex rounded-full border-2 border-[var(--ink)] bg-white p-0.5 shadow-[2px_2px_0_var(--ink)]">
           {HORIZONS.map((h) => (
             <button
               key={h}
               type="button"
               onClick={() => setDays(h)}
               className={
-                "rounded-md px-2.5 py-1 text-sm " + (days === h ? "bg-foreground text-background" : "text-muted-foreground")
+                "rounded-full px-2.5 py-1 text-sm font-bold " + (days === h ? "bg-[var(--lime)] text-[var(--ink)]" : "text-black/50")
               }
             >
               {h}d
@@ -186,7 +189,7 @@ export default function ForecastPage() {
 
       {base && shown && (
         <>
-          <section className="space-y-3 rounded-xl border p-4">
+          <section className="space-y-3 brut-card p-4">
             {scenario ? (
               <>
                 <Headline f={scenario} label="What-if" />
@@ -220,15 +223,15 @@ export default function ForecastPage() {
           </section>
 
           {shown.causes.length > 0 && (
-            <section className="rounded-xl border">
-              <h2 className="border-b px-4 py-2 text-sm font-semibold">Why</h2>
-              <ul className="divide-y">
+            <section className="brut-card overflow-hidden">
+              <h2 className="border-b-2 border-[var(--ink)] bg-[var(--paper)] px-4 py-2 text-sm font-bold">Why</h2>
+              <ul className="divide-y-2 divide-black/10">
                 {shown.causes.map((c, i) => (
                   <li key={i} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
                     <span className="min-w-0 truncate">
                       {c.label}
                       <span className="ml-2 text-xs text-muted-foreground">
-                        {c.type === "bill" ? `due ${shortDate(c.date)}` : `unpaid since ${shortDate(c.date)}`}
+                        {c.type === "bill" ? `due ${shortDate(c.date)}` : `since ${shortDate(c.date)}`}
                       </span>
                     </span>
                     <span className="font-medium">{rupees(c.amount)}</span>
@@ -239,7 +242,7 @@ export default function ForecastPage() {
           )}
 
           {/* What-if panel */}
-          <section className="space-y-4 rounded-xl border p-4">
+          <section className="space-y-4 brut-card p-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">What if…</h2>
               {changes.length > 0 && (
@@ -350,7 +353,7 @@ export default function ForecastPage() {
             </div>
           </section>
 
-          <section className="rounded-xl border">
+          <section className="brut-card overflow-hidden">
             <button
               type="button"
               onClick={() => setShowAssumptions((s) => !s)}

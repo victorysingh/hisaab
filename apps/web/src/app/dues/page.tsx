@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar } from "@/components/avatar";
 import { DaysLateBadge } from "@/components/days-late-badge";
 import { RemindButton } from "@/components/remind-button";
 import {
@@ -44,7 +45,7 @@ function MarkPaid({ row, onDone }: { row: DuesRow; onDone: () => void }) {
   }
 
   return (
-    <div className="mt-3 space-y-2 rounded-lg bg-muted/60 p-3">
+    <div className="mt-3 ml-12 space-y-2 rounded-lg bg-muted/60 p-3">
       <div className="flex items-center gap-2">
         <span className="text-sm">₹</span>
         <Input inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value)} className="flex-1" />
@@ -97,7 +98,7 @@ export default function DuesPage() {
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
       <header>
-        <h1 className="text-2xl font-semibold">Dues</h1>
+        <h1 className="font-display text-3xl font-extrabold">Dues</h1>
         <p className="text-sm text-muted-foreground">Who owes you, how much, and since when.</p>
       </header>
 
@@ -115,26 +116,27 @@ export default function DuesPage() {
       {dues && (
         <>
           <section className="grid grid-cols-2 gap-2">
-            <div className="rounded-xl border p-3">
+            <div className="brut-card p-3">
               <p className="text-xs text-muted-foreground">Total outstanding</p>
               <p className="mt-1 text-xl font-semibold">{rupees(dues.totals.total_outstanding)}</p>
             </div>
-            <div className="rounded-xl border p-3">
+            <div className="brut-card p-3">
               <p className="text-xs text-muted-foreground">Overdue invoices</p>
               <p className="mt-1 text-xl font-semibold">{dues.totals.overdue_count}</p>
             </div>
           </section>
 
-          <section className="rounded-xl border">
+          <section className="brut-card overflow-hidden">
             {dues.rows.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground">Everyone has paid. 🎉</p>
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y-2 divide-black/10">
                 {dues.rows.map((r) => {
                   const c = customers.get(r.customer_id);
                   return (
                     <li key={r.customer_id} className="px-4 py-3">
                       <div className="flex items-center gap-3">
+                        <Avatar name={r.customer_name} className="border-2 border-[var(--ink)]" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{r.customer_name}</p>
                           <p className="text-xs text-muted-foreground">
@@ -145,11 +147,12 @@ export default function DuesPage() {
                         <DaysLateBadge days={r.days_late} />
                         <p className="w-20 text-right font-semibold">{rupees(r.total_due)}</p>
                       </div>
-                      <div className="mt-2 flex gap-2">
+                      <div className="mt-2 flex gap-2 pl-12">
                         <Button
                           type="button"
                           size="sm"
                           variant={open === r.customer_id ? "default" : "outline"}
+                          className="rounded-full border-2 border-[var(--ink)] font-bold shadow-[2px_2px_0_var(--ink)]"
                           onClick={() => setOpen(open === r.customer_id ? null : r.customer_id)}
                         >
                           Mark paid
@@ -162,7 +165,7 @@ export default function DuesPage() {
                           amount={r.total_due}
                           since={r.oldest_due_date}
                           daysLate={r.days_late}
-                          className="rounded-md"
+                          className="rounded-full border-2 border-[var(--ink)] bg-[var(--saffron)] font-bold shadow-[2px_2px_0_var(--ink)]"
                         />
                       </div>
                       {open === r.customer_id && (
