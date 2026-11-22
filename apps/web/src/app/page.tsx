@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle2, MessageCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { AlertTriangle, CheckCircle2, PartyPopper } from "lucide-react";
 import { DaysLateBadge } from "@/components/days-late-badge";
+import { RemindButton } from "@/components/remind-button";
 import {
   api,
+  BUSINESS_NAME,
   num,
-  reminderText,
   rupees,
   shortDate,
-  whatsappUrl,
   type Customer,
   type DuesResponse,
   type DuesRow,
@@ -40,15 +40,34 @@ function pickChase(rows: DuesRow[], target: number): DuesRow[] {
 export default function HomePage() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [received, setReceived] = useState<string | null>(null);
+  const prevDues = useRef<Map<string, { name: string; due: number }> | null>(null);
 
   useEffect(() => {
     const load = () =>
-      Promise.all([
+      // Check open Razorpay links first (works even without a webhook), then load everything.
+      api("/payment-links/sync", { method: "POST" })
+        .catch(() => null)
+        .then(() => Promise.all([
         api<DuesResponse>("/dashboard/dues"),
         api<Forecast>("/forecast?days=60"),
         api<Customer[]>("/customers"),
-      ])
+        ]))
         .then(([dues, forecast, customers]) => {
+          // Spot payments that arrived since the last refresh, for the "payment received" banner.
+          const now = new Map(dues.rows.map((r) => [r.customer_id, { name: r.customer_name, due: num(r.total_due) }]));
+          if (prevDues.current) {
+            const paid: string[] = [];
+            prevDues.current.forEach((before, id) => {
+              const after = now.get(id)?.due ?? 0;
+              if (after < before.due) paid.push(`${rupees(before.due - after)} from ${before.name}`);
+            });
+            if (paid.length) {
+              setReceived(`Payment received: ${paid.join(", ")}`);
+              setTimeout(() => setReceived(null), 8000);
+            }
+          }
+          prevDues.current = now;
           setData({ dues, forecast, customers });
           setError(null);
         })
@@ -91,10 +110,20 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto w-full max-w-md space-y-4 p-4">
-      <header>
-        <p className="text-sm text-muted-foreground">Namaste 👋</p>
-        <h1 className="text-2xl font-semibold">Hisaab</h1>
+      <header className="flex items-end justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">Namaste 👋</p>
+          <h1 className="text-2xl font-semibold">{BUSINESS_NAME}</h1>
+        </div>
+        <p className="text-xs text-muted-foreground">{shortDate(forecast.today)}</p>
       </header>
+
+      {received && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-800 animate-in fade-in slide-in-from-top-2">
+          <PartyPopper className="h-5 w-5 shrink-0" />
+          {received}
+        </div>
+      )}
 
       {/* Action today */}
       <section
@@ -128,25 +157,17 @@ export default function HomePage() {
               {chase.map((r) => {
                 const c = byId.get(r.customer_id);
                 return (
-                  <a
+                  <RemindButton
                     key={r.customer_id}
-                    href={whatsappUrl(
-                      c?.phone,
-                      reminderText({
-                        guardian: c?.guardian_name,
-                        student: r.customer_name,
-                        amount: r.total_due,
-                        since: r.oldest_due_date,
-                        daysLate: r.days_late,
-                      }),
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-sm hover:bg-muted"
-                  >
-                    <MessageCircle className="h-4 w-4 text-emerald-600" />
-                    Remind {r.customer_name.split(" ")[0]}
-                  </a>
+                    customerId={r.customer_id}
+                    phone={c?.phone}
+                    guardian={c?.guardian_name}
+                    student={r.customer_name}
+                    amount={r.total_due}
+                    since={r.oldest_due_date}
+                    daysLate={r.days_late}
+                    label={`Remind ${r.customer_name.split(" ")[0]}`}
+                  />
                 );
               })}
               <Link

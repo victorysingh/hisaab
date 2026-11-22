@@ -130,6 +130,7 @@ export function reminderText(opts: {
   amount: Money;
   since: string;
   daysLate?: number;
+  payUrl?: string;
 }): string {
   const hello = opts.guardian ? `Namaste ${opts.guardian},` : "Namaste,";
   const fee = `${opts.student}'s tuition fees of ${rupees(opts.amount)}`;
@@ -143,5 +144,6 @@ export function reminderText(opts: {
         : d <= 30
           ? `${fee} have been pending since ${since}. Could you please let me know by when you can pay?`
           : `this is regarding ${fee}, outstanding since ${since}. Please clear the dues this week, or call me to discuss.`;
-  return `${hello} ${body} Thank you - ${BUSINESS_NAME}`;
+  const pay = opts.payUrl ? ` Pay securely here: ${opts.payUrl}` : "";
+  return `${hello} ${body}${pay} Thank you - ${BUSINESS_NAME}`;
 }

@@ -128,3 +128,4 @@
     @apply font-sans;
   }
 }
+:root { --primary: oklch(0.51 0.09 186); --primary-foreground: oklch(0.985 0 0); --ring: oklch(0.6 0.09 186); }

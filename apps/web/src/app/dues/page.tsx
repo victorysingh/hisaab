@@ -1,17 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DaysLateBadge } from "@/components/days-late-badge";
+import { RemindButton } from "@/components/remind-button";
 import {
   api,
   num,
-  reminderText,
   rupees,
   shortDate,
-  whatsappUrl,
   type Customer,
   type DuesResponse,
   type DuesRow,
@@ -156,23 +154,16 @@ export default function DuesPage() {
                         >
                           Mark paid
                         </Button>
-                        <a
-                          href={whatsappUrl(
-                            c?.phone,
-                            reminderText({
-                              guardian: c?.guardian_name,
-                              student: r.customer_name,
-                              amount: r.total_due,
-                              since: r.oldest_due_date,
-                              daysLate: r.days_late,
-                            }),
-                          )}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 rounded-md border px-3 text-sm hover:bg-muted"
-                        >
-                          <MessageCircle className="h-4 w-4 text-emerald-600" /> Remind
-                        </a>
+                        <RemindButton
+                          customerId={r.customer_id}
+                          phone={c?.phone}
+                          guardian={c?.guardian_name}
+                          student={r.customer_name}
+                          amount={r.total_due}
+                          since={r.oldest_due_date}
+                          daysLate={r.days_late}
+                          className="rounded-md"
+                        />
                       </div>
                       {open === r.customer_id && (
                         <MarkPaid
