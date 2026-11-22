@@ -1,11 +1,17 @@
 # Hisaab: deployment handover
 
 Repo: https://github.com/victorysingh/hisaab (branch `main`)
-API (Render): https://hisaab-api-zcid.onrender.com · Web (Vercel): to be created
+
+| | URL |
+|---|---|
+| Web (Vercel) | https://hisaab-peach-phi.vercel.app |
+| API (Render) | https://hisaab-api-q5n9.onrender.com |
+
+The earlier API at `hisaab-api-zcid.onrender.com` (another Render account) is no longer used.
 
 ## 1. Render: API (`hisaab-api`)
 
-Already created. Settings to confirm:
+Created from the public repo URL, so it is not connected to GitHub. To ship new API code: Render → hisaab-api → **Manual Deploy → Deploy latest commit**.
 
 | Setting | Value |
 |---|---|
@@ -13,40 +19,37 @@ Already created. Settings to confirm:
 | Build Command | `pip install -r requirements.txt` |
 | Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 | Health Check Path | `/health` |
-| Region | Singapore |
+| Region / Plan | Singapore / Free |
 
 ### Environment variables
 
 | Key | Value |
 |---|---|
 | `SUPABASE_URL` | `https://uugheqtrykmivkxthjkz.supabase.co` (no trailing slash) |
-| `SUPABASE_ANON_KEY` | from `apps/api/.env` |
 | `SUPABASE_SERVICE_KEY` | the **service_role** key from `apps/api/.env` |
 | `DEMO_MODE` | `true` |
-| `DEMO_OWNER_USER_ID` | the demo user's UID **only**. Check that nothing is glued on after it |
+| `DEMO_OWNER_USER_ID` | the demo user's UID only |
 | `DEMO_TODAY` | `2026-11-22` |
 | `PYTHON_VERSION` | `3.13.9` |
-| `WEB_ORIGIN` | the Vercel URL, e.g. `https://hisaab-xxxx.vercel.app` (no trailing slash) |
-| `RAZORPAY_KEY_ID` | `rzp_test_...` (Razorpay dashboard, Test Mode → API Keys) |
-| `RAZORPAY_KEY_SECRET` | from the same screen |
-| `RAZORPAY_WEBHOOK_SECRET` | any long random text; must match the webhook below |
+| `WEB_ORIGIN` | `https://hisaab-peach-phi.vercel.app` (no trailing slash) |
+| `RAZORPAY_KEY_ID` | `rzp_test_...` (Razorpay, Test Mode, API Keys). Not set yet |
+| `RAZORPAY_KEY_SECRET` | from the same screen. Not set yet |
+| `RAZORPAY_WEBHOOK_SECRET` | any long random text; must match the webhook below. Not set yet |
 
-### Known issue to fix first
-`/health` works, but `/api/v1/forecast?days=60` fails, so the API can't read the data.
-1. Open `https://hisaab-api-zcid.onrender.com/api/v1/customers`.
-2. Render → hisaab-api → **Logs**: read the newest red error.
-3. Almost always one of: `SUPABASE_SERVICE_KEY` truncated or the anon key pasted instead; `DEMO_OWNER_USER_ID` has extra text after the UID; `SUPABASE_URL` has a trailing `/`.
-4. Fix it, **Save Changes**, wait for the redeploy, and open the forecast URL again. It should return JSON with `"shortfall"`.
+Check: `https://hisaab-api-q5n9.onrender.com/api/v1/forecast?days=60` returns JSON with `"shortfall"`.
 
 ## 2. Vercel: web
 
-1. vercel.com → **Create New → Project** → import `victorysingh/hisaab`.
-2. **Root Directory:** `apps/web` (click Edit). Framework: Next.js.
-3. Environment variable: `NEXT_PUBLIC_API_BASE_URL` = `https://hisaab-api-zcid.onrender.com` (no trailing slash, no `/api/v1`).
-4. Deploy, then put the Vercel URL into Render's `WEB_ORIGIN` (see above).
-5. Open the Vercel URL. Home should show **"You'll be ₹6,000 short on 1 Dec"**.
+Project `hisaab`, root `apps/web`, deployed with the Vercel CLI (the repo owner's GitHub account has no Vercel integration, so pushes do not deploy). Env var: `NEXT_PUBLIC_API_BASE_URL` = `https://hisaab-api-q5n9.onrender.com`.
 
-If the page says "Failed to fetch": press F12 → Console. A CORS error means `WEB_ORIGIN` doesn't exactly match the Vercel URL. A 500 means the Render data issue above.
+To redeploy:
+
+```
+cd apps/web
+npx vercel deploy --prod
+```
+
+If the page says "Failed to fetch": press F12 → Console. A CORS error means `WEB_ORIGIN` on Render doesn't exactly match the Vercel URL.
 
 ## 3. Razorpay webhook (test mode)
 
@@ -54,7 +57,7 @@ Razorpay dashboard → **Test Mode** → **Account & Settings → Webhooks → A
 
 | Field | Value |
 |---|---|
-| Webhook URL | `https://hisaab-api-zcid.onrender.com/api/v1/webhooks/razorpay` |
+| Webhook URL | `https://hisaab-api-q5n9.onrender.com/api/v1/webhooks/razorpay` |
 | Secret | same as `RAZORPAY_WEBHOOK_SECRET` on Render |
 | Active events | `payment_link.paid` |
 

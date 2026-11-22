@@ -2,7 +2,7 @@
 
 Pitch: "Other apps make you type the past. Hisaab you just talk to, and it tells you the future."
 
-Setup before recording: open the web app on a phone-width window (390px) at http://localhost:3000, with the API running. Use the seed data. Pin the date with DEMO_TODAY in the API .env so the figures match every take. Open the SMS simulator in a second tab at http://localhost:3000/sms-simulator. Have the mic bar ready. Every figure on screen comes from the API. Do not quote a number from memory.
+Setup before recording: open the web app on a phone-width window (390px) at https://hisaab-peach-phi.vercel.app. Open https://hisaab-api-q5n9.onrender.com/health a minute before, because the free API sleeps. Use the seed data. DEMO_TODAY is pinned on Render so the figures match every take. Open the SMS simulator in a second tab at https://hisaab-peach-phi.vercel.app/sms-simulator. Have the mic bar ready. Every figure on screen comes from the API. Do not quote a number from memory.
 
 ## Timing
 
